@@ -89,7 +89,7 @@ mapColumns = [
         }
     ]
 print("********Часть 1********")
-def getUrlJson(url): #полу
+def getUrlJson(url): #получение адреса
     while(True):
         try:
             response = urllib.request.urlopen(url)
@@ -173,7 +173,7 @@ def addVacancyToRow(vacancy, details): #добавление вакансий в
 parsedIds = []
 resultRows = []
 
-def getVacancies():
+def getVacancies(): #получаем вакансии с апишки  hh.ru
     specializations = getUrlJson("https://api.hh.ru/specializations")
     for specialization in specializations[0]['specializations']:
         for page in getPages(specialization['id']):
@@ -194,12 +194,13 @@ for col in mapColumns:
     csvColumns.append(col['column'])
     types[col['column']] = col['dtype']
 
-print('Получение вакансий...')
 getVacancies()
+
 dt = pd.DataFrame(resultRows, columns=csvColumns)
+
 dt = dt.astype(types)
-print('Запись выкансий в .csv файл...')
-dt.to_csv("Vacancies.csv",  na_rep = 'NA', index=True, index_label="", quotechar='"', quoting=csv.QUOTE_NONNUMERIC, encoding="utf-8-sig")
+
+dt.to_csv("Vacancies.csv",  na_rep = 'NA', index=True, index_label="", quotechar='"', quoting=csv.QUOTE_NONNUMERIC, encoding="utf-8-sig") #запишем вакансии в csv
     
 def saveCount(df, col, file):
     row = []
@@ -221,10 +222,9 @@ def saveCount2(df, col1, col2, file):
     newDf = pd.DataFrame(row, columns=[col1, col2, "Count"])
     newDf.to_csv(file,  na_rep = 'NA', index=True, index_label="", quotechar='"', quoting=csv.QUOTE_NONNUMERIC, encoding="utf-8-sig")
 
-print("********Часть 2********")
-print('Сортировка вакансий...')
-dt = dt.sort_values(["maxSalary", "minSalary"])
-dt.to_csv("SortedSalaryVacancies.csv",  na_rep = 'NA', index=True, index_label="", quotechar='"', quoting=csv.QUOTE_NONNUMERIC, encoding="utf-8-sig")
+dt = dt.sort_values(["maxSalary", "minSalary"]) #сортируем
+
+dt.to_csv("SortedSalaryVacancies.csv",  na_rep = 'NA', index=True, index_label="", quotechar='"', quoting=csv.QUOTE_NONNUMERIC, encoding="utf-8-sig") #записываем
 
 for column in dt.columns:
     if str(dt.dtypes[column]) == 'object':
@@ -263,7 +263,6 @@ for salaryGroup in salariesGroups:
 sDaysresult = pd.DataFrame(daysRows, columns=['Range', "Avg", "Min", "Max"])
 sDaysresult.to_csv("Part2.csv",  na_rep = 'NA', index=True, index_label="", quotechar='"', quoting=csv.QUOTE_NONNUMERIC, encoding="utf-8-sig")
     
-print("********Часть 3********")
 saveCount2(dt, "Name", "minSalary", "Part 3 - minSalary.csv")
 saveCount2(dt, "Name", "maxSalary", "Part 3 - maxSalary.csv")
 saveCount2(dt, "Name", "expierence", "Part 3 - expierence.csv")
